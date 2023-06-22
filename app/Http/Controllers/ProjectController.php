@@ -9,19 +9,14 @@ use App\Models\UserActivityHistory;
 
 class ProjectController extends Controller
 {
-    // public function index()
-    // {
-    //     $projects = Project::all();
-    //     // dd('hello');
-    //     return view('pages.projects', compact('projects'));
-    // }
+
 
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $userId = auth()->user()->id; // Get the ID of the currently authenticated user
+        $userId = auth()->user()->id;
 
-        $query = Project::where('user_id', $userId); // Filter projects by user ID
+        $query = Project::where('user_id', $userId);
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -42,19 +37,19 @@ class ProjectController extends Controller
     public function show(Project $project, Request $request)
     {
         $projectWithDetails = Project::with('projectDetails')->findOrFail($project->id);
-        // get the search query from the request
+
         $search = $request->input('search');
 
 
         if ($request->has('filter')) {
-            // Filter the items based on the filter parameter
+
             if ($request->get('filter') == 'assets') {
                 $projectWithDetails->projectDetails = $projectWithDetails->projectDetails->where('type', 'asset');
             } elseif ($request->get('filter') == 'inventory') {
                 $projectWithDetails->projectDetails = $projectWithDetails->projectDetails->where('type', 'inventory');
             }
         }
-        // filter the project details based on the search query
+
         if ($search) {
             $projectWithDetails->projectDetails = $projectWithDetails->projectDetails->filter(function ($detail) use ($search) {
                 return stristr($detail->item_name, $search) !== false;
@@ -271,21 +266,9 @@ class ProjectController extends Controller
         return view('pages.item-form', compact('project'));
     }
 
-    // public function edit(Project $project, ProjectDetails $details)
-    // {
-    //     // $projectDe = Project::findOrFail($project);
-    //     $item = ProjectDetails::findOrFail($details);
-    //     $projectWithDetails = Project::with('projectDetails')->findOrFail($details);
-    //     dd($item);
-    //     return view('pages.item-form', compact('project', 'details'));
-    // }
-
-
     public function edit(Project $project, $detail)
     {
-        // Find the project detail by id, with its corresponding project
-        // $detail = ProjectDetails::with('project')->findOrFail($id);
-        // $project = Project::find(1); // Retrieve the project with id 1
+
         $detail = $project->projectDetails()->where('id', $detail)->first();
 
         return view('pages.item-form', compact('detail', 'project'));
