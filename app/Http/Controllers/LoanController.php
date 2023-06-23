@@ -82,7 +82,7 @@ class LoanController extends Controller
         $loanRequest->requester_id = $request->input('requester_id');
 
         // Set other properties as needed
-        $desc = Auth()->user()->username . " has request loan item [" . $loanRequest->projectDetails->item_name . '] from ' . $loanRequest->owner->username;
+        $desc = Auth::user()->username . " has request loan item [" . $loanRequest->projectDetails->item_name . '] from ' . $loanRequest->owner->username;
         // Save the loan request to the database
         $loanRequest->save();
         $activity = new UserActivityHistory();
@@ -133,7 +133,7 @@ class LoanController extends Controller
             $projectDetails->save();
         }
 
-        $desc = Auth()->user()->username . " has return loaned item [" . $loanRequest->projectDetails->item_name . '] to ' . $loanRequest->owner->username;
+        $desc = Auth::user()->username . " has return loaned item [" . $loanRequest->projectDetails->item_name . '] to ' . $loanRequest->owner->username;
         // Save the loan request to the database
         $loanRequest->save();
         $activity = new UserActivityHistory();
@@ -162,7 +162,7 @@ class LoanController extends Controller
 
         // Delete the loan request
         $loanRequest->delete();
-        $desc = Auth()->user()->username . " has cancel to loan item [" . $loanRequest->projectDetails->item_name . '] from ' . $loanRequest->owner->username;
+        $desc = Auth::user()->username . " has cancel to loan item [" . $loanRequest->projectDetails->item_name . '] from ' . $loanRequest->owner->username;
         // Save the loan request to the database
 
         $activity = new UserActivityHistory();
@@ -206,7 +206,7 @@ class LoanController extends Controller
         // Save the changes
         $loanRequest->save();
 
-        $desc = Auth()->user()->username . " has" . $loanRequest->action . " loan item [" . $loanRequest->projectDetails->item_name . '] to ' . $loanRequest->owner->username;
+        $desc = Auth::user()->username . " has" . $loanRequest->action . " loan item [" . $loanRequest->projectDetails->item_name . '] to ' . $loanRequest->owner->username;
         // Save the loan request to the database
         $loanRequest->save();
         $activity = new UserActivityHistory();
