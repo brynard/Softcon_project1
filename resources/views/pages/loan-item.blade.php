@@ -16,7 +16,7 @@
                     <div class="table-responsive ">
                         <table class="table align-items-center ">
                             <tbody>
-                                @foreach ($loanRequests as $request)
+                                @foreach ($ownerLoanManagement as $request)
                                     <tr>
                                         <td class="">
                                             <div class="d-flex px-2 py-1 align-items-center">
@@ -47,36 +47,29 @@
                                         </td>
                                         <td>
                                             <div class="text-center">
-                                                <p class="text-xs font-weight-bold mb-0">Owner</p>
+                                                <p class="text-xs font-weight-bold mb-0">Requester</p>
                                                 <h6 class="text-sm mb-0">
-                                                    {{ $request->owner->username }}
+                                                    {{ $request->requester->username }}
                                                 </h6>
                                             </div>
                                         </td>
-                                        <td class="button-cell">
-                                            <div class="text-end">
-                                                @if ($request->status == 'pending')
-                                                    <button type="button" class="btn btn-secondary"
-                                                        onclick="showCancelRequestModal('{{ $request->id }}')">Cancel
-                                                        Request</button>
-                                                @elseif ($request->status == 'approved')
-                                                    <button type="button" class="btn btn-dark"
-                                                        onclick="showReturnItemModal('{{ $request->id }}')">Return
-                                                        Item</button>
-                                                @endif
-                                            </div>
+                                        <td class="align-middle text-sm button-cell ">
+
+                                            @if ($request->status == 'approved')
+                                                <button type="button" class="btn btn-dark"
+                                                    onclick="showReturnItemModal('{{ $request->id }}')">Return
+                                                    Item</button>
+                                            @endif
+
                                         </td>
-                                        <td class="align-middle text-sm button-cell">
-                                            <button type="button" class="btn btn-primary ">Edit
-                                                Request</button>
-                                        </td>
+
 
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
-                    {{ $loanRequests->links() }}
+                    {{ $ownerLoanManagement->links() }}
                 </div>
             </div>
             <div class="col-lg-3">
@@ -218,7 +211,83 @@
             </div>
         </div>
 
+        <div class="col-lg-9 mb-lg-0 mb-4">
+            <div class="card ">
+                <div class="card-header pb-0 p-3">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="mb-2">User Loan Request Activity</h6>
+                    </div>
+                </div>
+                <div class="table-responsive ">
+                    <table class="table align-items-center ">
+                        <tbody>
+                            @foreach ($loanRequests as $request)
+                                <tr>
+                                    <td class="">
+                                        <div class="d-flex px-2 py-1 align-items-center">
 
+                                            <div class="ms-4">
+                                                <p class="text-xs font-weight-bold mb-0">Item:</p>
+                                                <h6 class="text-sm mb-0">{{ $request->projectDetails->item_name }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-center">
+                                            <p class="text-xs font-weight-bold mb-0">Date Range</p>
+                                            <h6 class="text-sm mb-0">
+                                                {{ date('d/m/Y', strtotime($request->loan_start_date)) }}
+                                                -
+                                                {{ date('d/m/Y', strtotime($request->loan_end_date)) }}
+                                            </h6>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-center">
+                                            <p class="text-xs font-weight-bold mb-0">Status</p>
+                                            <h6 class="text-sm mb-0">
+                                                {{ $request->status }}
+                                            </h6>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-center">
+                                            <p class="text-xs font-weight-bold mb-0">Owner</p>
+                                            <h6 class="text-sm mb-0">
+                                                {{ $request->owner->username }}
+                                            </h6>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-center">
+                                            <p class="text-xs font-weight-bold mb-0">Return Status</p>
+                                            <h6 class="text-sm mb-0">
+                                                {{ $request->return_status ?? 'N/A' }}
+                                            </h6>
+                                        </div>
+                                    </td>
+                                    <td class="button-cell">
+                                        <div class="text-end">
+                                            @if ($request->status == 'pending')
+                                                <button type="button" class="btn btn-secondary"
+                                                    onclick="showCancelRequestModal('{{ $request->id }}')">Cancel
+                                                    Request</button>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="align-middle text-sm button-cell">
+                                        <button type="button" class="btn btn-primary ">Edit
+                                            Request</button>
+                                    </td>
+
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                {{ $loanRequests->links() }}
+            </div>
+        </div>
     </div>
 
 
@@ -311,12 +380,16 @@
                         <div class="mb-3">
                             <label for="start_date" class="form-label">Start Date</label>
                             <input type="datetime-local" class="form-control datepicker" id="start_date"
-                                name="start_date" placeholder="Select start date">
+                                name="start_date" placeholder="Select start date"
+                                min="<?= date('Y-m-d\TH:i:s', strtotime('+1 day')) ?>">
                         </div>
                         <div class="mb-3">
                             <label for="return_date" class="form-label">Return Date</label>
-                            <input type="datetime-local" class="form-control datepicker" id="return_date"
-                                name="return_date" placeholder="Select return date">
+                            {{-- <input type="datetime-local" class="form-control datepicker" id="return_date"
+                                name="return_date" placeholder="Select return date"> --}}
+                            <input type="date" class="form-control datepicker" id="return_date" name="return_date"
+                                placeholder="Select return date" min="<?= date('Y-m-d', strtotime('+1 day')) ?>">
+
                         </div>
                         <input type="hidden" name="project_details_id" id="project_details_id">
                         <input type="hidden" name="owner_id" id="owner_id">

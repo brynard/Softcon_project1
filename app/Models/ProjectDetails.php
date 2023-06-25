@@ -5,15 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProjectDetails extends Model
+class Item extends Model
 {
     use HasFactory;
-
-
-    public function project()
-    {
-        return $this->belongsTo(Project::class, 'project_id');
-    }
     public $timestamps = true;
     protected $fillable = [
         'id',
@@ -21,17 +15,34 @@ class ProjectDetails extends Model
         'item_name',
         'quantity',
         'unit_price',
+        'type',
+        'price',
+        'date_received',
+        'status',
+        'image',
+    ];
+
+}
+
+class Asset extends Item
+{
+    use HasFactory;
+    protected $fillable = [
         'subtype',
         'serial_number',
         'model',
         'engine_type',
         'voltage',
         'supplier',
-        'location',
-        'type',
-        'price',
-        'date_received',
-        'status',
-        'image'
+    ];
+
+}
+
+class Inventory extends Item
+{
+    use HasFactory;
+    protected $fillable = [
+        'measurement_unit',
+        'warranty',
     ];
 }

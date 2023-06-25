@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\ProjectDetails;
+use App\Models\Item;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\LoanRequest;
@@ -20,7 +20,7 @@ class LoanController extends Controller
         $userId = auth()->id();
         $search = $request->get('search');
 
-        $loanItems = ProjectDetails::where('status', 'Available')
+        $loanItems = Item::where('status', 'Available')
             ->whereHas('project', function ($query) {
                 $query->whereHas('user', function ($query) {
                     $query->where('id', '!=', Auth()->user()->id);
@@ -39,11 +39,14 @@ class LoanController extends Controller
             })
             ->paginate(5);
 
-
+        $ownerLoanManagement = LoanRequest::where('owner_id', $userId)
+            ->where('return_status', 'not_returned')
+            ->orderBy('created_at', 'desc')
+            ->paginate(4);
 
 
         $loanRequests = LoanRequest::where('requester_id', $userId)
-            ->where('return_status', '!=', 'returned')
+            ->orderBy('created_at', 'desc')
             ->paginate(4);
 
         $pendingApprovals = LoanRequest::where('owner_id', $userId)
@@ -53,7 +56,8 @@ class LoanController extends Controller
         return view('pages.loan-item', [
             'loanItems' => $loanItems,
             'loanRequests' => $loanRequests,
-            'pendingApprovals' => $pendingApprovals
+            'pendingApprovals' => $pendingApprovals,
+            'ownerLoanManagement' => $ownerLoanManagement
         ])->with('loanItemsPagination', $loanItems->links());
     }
 
@@ -127,7 +131,7 @@ class LoanController extends Controller
         $loanRequest->save();
 
         // Update the status of the associated project details
-        $projectDetails = ProjectDetails::where('id', $loanRequest->project_details_id)->first();
+        $projectDetails = Item::where('id', $loanRequest->project_details_id)->first();
         if ($projectDetails) {
             $projectDetails->update(['status' => 'Available']);
             $projectDetails->save();
@@ -189,10 +193,10 @@ class LoanController extends Controller
 
         // Update the status based on the action
         if ($action === 'approve') {
-            $loanRequest->update(['status' => 'approved',  'process_date' => now()]);
+            $loanRequest->update(['status' => 'approved',  'process_date' => now(), 'return_status' => 'not_returned']);
 
             // Find the related ProjectDetails and update its status to 'Loaned'
-            $projectDetails = ProjectDetails::where('id', $loanRequest->project_details_id)->first();
+            $projectDetails = Item::where('id', $loanRequest->project_details_id)->first();
             if ($projectDetails) {
                 $projectDetails->update(['status' => 'Loaned']);
                 $projectDetails->save();

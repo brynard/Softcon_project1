@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use App\Models\ProjectDetails;
+use App\Models\Item;
 use App\Models\UserActivityHistory;
 
 class ProjectController extends Controller
@@ -143,7 +144,7 @@ class ProjectController extends Controller
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $detail = new ProjectDetails;
+        $detail = new Item;
         $detail->project_id = $project->id;
         $detail->item_name = $validatedData['item_name'];
         $detail->type = $validatedData['type'];
@@ -187,7 +188,7 @@ class ProjectController extends Controller
     }
 
 
-    public function updateItem(Project $project, ProjectDetails $detail, Request $request)
+    public function updateItem(Project $project, Item $detail, Request $request)
     {
 
         $before = $detail;
