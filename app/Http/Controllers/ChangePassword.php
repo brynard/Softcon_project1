@@ -11,6 +11,7 @@ class ChangePassword extends Controller
 
     protected $user;
 
+
     public function __construct()
     {
         Auth::logout();
