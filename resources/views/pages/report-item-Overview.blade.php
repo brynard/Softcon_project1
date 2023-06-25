@@ -32,8 +32,6 @@ $start = microtime(true);
             @endcomponent
             </div>
             <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
-                <div class="card">
-                    <div class="card-body p-3">
                     @component('components.card', [
                 'label' => 'Total Value',
                 'value' => 'RM '.$totalValue,
@@ -41,8 +39,6 @@ $start = microtime(true);
                 'iconClass' => 'ni ni-paper-diploma'
             ])
             @endcomponent
-                    </div>
-                </div>
             </div>
 
         </div>
